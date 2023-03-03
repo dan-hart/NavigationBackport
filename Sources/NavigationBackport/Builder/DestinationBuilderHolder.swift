@@ -26,7 +26,7 @@ class DestinationBuilderHolder: ObservableObject {
   }
 
   func build<T>(_ typedData: T, with identifier: String?) -> AnyView {
-    let base = (typedData as? AnyHashable)?.base
+    let errorView = AnyView(Image(systemName: "exclamationmark.triangle"))
     if let identifier = identifier {
       if let builder = builders[identifier], let output = builder(typedData) {
         return output
@@ -35,18 +35,24 @@ class DestinationBuilderHolder: ObservableObject {
           assertionFailure("No view builder found for type \(identifier)")
       }
     } else {
-      var possibleMirror: Mirror? = Mirror(reflecting: base ?? typedData)
-      while let mirror = possibleMirror {
-        let key = Self.identifier(for: mirror.subjectType)
-
-        if let builder = builders[key], let output = builder(typedData) {
-          return output
+        var typeString = Self.identifier(for: T.self)
+        
+        if typedData is NBPathComponent {
+            let component = (typedData as! NBPathComponent)
+            let base = component.data.base
+            let typeMirror = Mirror(reflecting: base)
+            typeString = Self.identifier(for: typeMirror.subjectType)
         }
-        possibleMirror = mirror.superclassMirror
-      }
-        UALog(.warn, eventType: .other("Navigation"), message: "[\(DestinationBuilderHolder.self)] has no destination for type [\(T.self)] and missing identifier. Call Stack: [\(Thread.callStackSymbols)]")
-        assertionFailure("No destination with type \(typedData.self) exists")
+
+        if let builder = builders[typeString],
+            let output = builder(typedData) ??
+              (typedData is NBPathComponent ? builder((typedData as! NBPathComponent).data) : nil) {
+            return output
+        } else {
+            UALog(.warn, eventType: .other("Navigation"), message: "[\(DestinationBuilderHolder.self)] has no destination for type [\(typeString)] and missing identifier. Call Stack: [\(Thread.callStackSymbols)]")
+            assertionFailure("No destination with type \(typeString) exists.")
+        }
     }
-    return AnyView(Image(systemName: "exclamationmark.triangle"))
+    return errorView
   }
 }
