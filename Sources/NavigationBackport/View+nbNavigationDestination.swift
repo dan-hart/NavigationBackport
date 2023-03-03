@@ -5,7 +5,6 @@ import LoggingKit
 public extension View {
   @available(iOS, deprecated: 16.0, message: "Use SwiftUI's Navigation API beyond iOS 15")
   func nbNavigationDestination<D: Hashable, C: View>(for pathElementType: D.Type, @ViewBuilder destination builder: @escaping (D) -> C) -> some View {
-      UALog(.info, eventType: .other("Navigation"), message: "[\(#function)] with element type [\(D.self)] for view [\(C.self)].")
     return modifier(DestinationBuilderModifier(typedDestinationBuilder: { AnyView(builder($0)) }))
   }
 }
@@ -50,7 +49,9 @@ public extension View {
   ///   - destination: A view to present.
   func nbNavigationDestination<V>(isPresented: Binding<Bool>, @ViewBuilder destination: () -> V) -> some View where V: View {
     let builtDestination = AnyView(destination())
-      UALog(.info, eventType: .other("Navigation"), message: "[\(#function)] isPresented: [\(isPresented.wrappedValue.description)] for view [\(V.self)].")
+      if isPresented.wrappedValue {
+          UALog(.info, eventType: .other("Navigation"), message: "Presented [\(#function)] for view [\(V.self)].")
+      }
     return modifier(
       LocalDestinationBuilderModifier(
         isPresented: isPresented,
