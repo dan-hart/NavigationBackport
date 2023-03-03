@@ -10,8 +10,8 @@ public extension NBNavigationPath {
   }
 
   var codable: CodableRepresentation? {
-    let codableElements = elements.compactMap { $0 as? Codable }
-    guard codableElements.count == elements.count else {
+    let codableElements = components.compactMap { $0 as? Codable }
+    guard codableElements.count == components.count else {
       return nil
     }
     return CodableRepresentation(elements: codableElements)
@@ -20,7 +20,7 @@ public extension NBNavigationPath {
   init(_ codable: CodableRepresentation) {
     // NOTE: Casting to Any first prevents the compiler from flagging the cast to AnyHashable as one that
     // always fails (which it isn't, thanks to the compiler magic around AnyHashable).
-    self.init(codable.elements.map { ($0 as Any) as! AnyHashable })
+    self.init(codable.elements.map { ($0 as Any) as! NBPathComponent })
   }
 }
 

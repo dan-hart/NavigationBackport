@@ -8,6 +8,6 @@ struct DestinationBuilderView<Data>: View {
   @EnvironmentObject var destinationBuilder: DestinationBuilderHolder
 
   var body: some View {
-    return destinationBuilder.build(data)
+      return destinationBuilder.build(data, with: nil)
   }
 }

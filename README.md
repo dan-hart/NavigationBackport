@@ -116,7 +116,7 @@ As well as replicating the standard features of the new `NavigationStack` APIs, 
 A `Navigator` object is available through the environment, giving access to the current navigation path. The navigator can be accessed via the environment, e.g. for a NBNavigationPath-backed stack:
 
 ```swift
-@EnvironmentObject var navigator: PathNavigator
+@EnvironmentObject var navigator: NBPathNavigator
 ```
 
 Or for a stack backed by an Array, e.g. `[ScreenType]`:
