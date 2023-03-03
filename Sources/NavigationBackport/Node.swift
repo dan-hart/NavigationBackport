@@ -6,13 +6,15 @@ struct Node<Screen>: View {
   let truncateToIndex: (Int) -> Void
   let index: Int
   let screen: Screen?
+  let identifier: String?
   
   @State var isAppeared = false
 
-  init(allScreens: [Screen], truncateToIndex: @escaping (Int) -> Void, index: Int) {
+  init(allScreens: [Screen], truncateToIndex: @escaping (Int) -> Void, index: Int, identifier: String? = nil) {
     self.allScreens = allScreens
     self.truncateToIndex = truncateToIndex
     self.index = index
+    self.identifier = identifier
     screen = allScreens[safe: index]
   }
 
@@ -29,12 +31,12 @@ struct Node<Screen>: View {
   }
 
   var next: some View {
-    Node(allScreens: allScreens, truncateToIndex: truncateToIndex, index: index + 1)
+    Node(allScreens: allScreens, truncateToIndex: truncateToIndex, index: index + 1, identifier: identifier)
   }
 
   var body: some View {
     if let screen = allScreens[safe: index] ?? screen {
-      DestinationBuilderView(data: screen)
+      DestinationBuilderView(data: screen, identifier: identifier)
         .background(
           NavigationLink(destination: next, isActive: isActiveBinding, label: EmptyView.init)
             .hidden()

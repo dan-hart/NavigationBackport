@@ -40,17 +40,11 @@ public struct NBNavigationStack<Root: View>: View {
   public var body: some View {
     if let unownedPath {
       content
-        .onChange(of: unownedPath.wrappedValue) {
-          ownedPath.path = $0
+        .onChange(of: unownedPath.wrappedValue) { wrappedPath in
+          ownedPath.path = wrappedPath
         }
         .onChange(of: ownedPath.path) { path in
           unownedPath.wrappedValue = path
-//          unownedPath.wrappedValue = path.compactMap { component in
-//            if let data = component.data.base as? Data {
-//              return data
-//            }
-//              fatalError("Cannot add \(type(of: component.data.base)) to stack of \(Data.self)")
-//          }
         }
     } else {
       content

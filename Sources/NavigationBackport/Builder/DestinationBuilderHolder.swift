@@ -25,10 +25,19 @@ class DestinationBuilderHolder: ObservableObject {
     }
   }
 
-  func build<T>(_ typedData: T, with identifier: String?) -> AnyView {
+  func build<T>(_ incomingDataOrComponent: T, with optionalIdentifier: String?) -> AnyView {
     let errorView = AnyView(Image(systemName: "exclamationmark.triangle"))
-    if let identifier = identifier {
-      if let builder = builders[identifier], let output = builder(typedData) {
+      
+      var identifier = ""
+      if incomingDataOrComponent is NBPathComponent {
+          identifier = (incomingDataOrComponent as! NBPathComponent).id
+      } else {
+          identifier = optionalIdentifier ?? ""
+      }
+    
+    if identifier.isEmpty == false {
+        if let builder = builders[identifier], let output = builder(incomingDataOrComponent) ??
+            (incomingDataOrComponent is NBPathComponent ? builder((incomingDataOrComponent as! NBPathComponent).data) : nil) {
         return output
       } else {
           UALog(.error, eventType: .other("Navigation"), message: "DestinationBuilderHolder has no destination for type [\(T.self)] and identifier [\(identifier)]. Call Stack: [\(Thread.callStackSymbols)]")
@@ -37,16 +46,16 @@ class DestinationBuilderHolder: ObservableObject {
     } else {
         var typeString = Self.identifier(for: T.self)
         
-        if typedData is NBPathComponent {
-            let component = (typedData as! NBPathComponent)
+        if incomingDataOrComponent is NBPathComponent {
+            let component = (incomingDataOrComponent as! NBPathComponent)
             let base = component.data.base
             let typeMirror = Mirror(reflecting: base)
             typeString = Self.identifier(for: typeMirror.subjectType)
         }
 
         if let builder = builders[typeString],
-            let output = builder(typedData) ??
-              (typedData is NBPathComponent ? builder((typedData as! NBPathComponent).data) : nil) {
+            let output = builder(incomingDataOrComponent) ??
+              (incomingDataOrComponent is NBPathComponent ? builder((incomingDataOrComponent as! NBPathComponent).data) : nil) {
             return output
         } else {
             UALog(.warn, eventType: .other("Navigation"), message: "[\(DestinationBuilderHolder.self)] has no destination for type [\(typeString)] and missing identifier. Call Stack: [\(Thread.callStackSymbols)]")

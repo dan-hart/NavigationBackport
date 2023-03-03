@@ -1,18 +1,18 @@
 import Foundation
 import SwiftUI
 
-struct Router<Screen, RootView: View>: View {
+struct Router<RootView: View>: View {
   let rootView: RootView
 
-  @Binding var screens: [Screen]
+  @Binding var screens: [NBPathComponent]
 
-  init(rootView: RootView, screens: Binding<[Screen]>) {
+  init(rootView: RootView, screens: Binding<[NBPathComponent]>) {
     self.rootView = rootView
     _screens = screens
   }
 
   var pushedScreens: some View {
-    Node(allScreens: screens, truncateToIndex: { screens = Array(screens.prefix($0)) }, index: 0)
+      Node(allScreens: screens, truncateToIndex: { screens = Array(screens.prefix($0)) }, index: 0, identifier: screens.first?.id)
   }
 
   private var isActiveBinding: Binding<Bool> {

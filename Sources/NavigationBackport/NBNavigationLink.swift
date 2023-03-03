@@ -24,7 +24,7 @@ public struct NBNavigationLink<P: Hashable, Label: View>: View {
       action: {
           guard let value = value else { return }
           if identifier == nil {
-              pathAppender.append?(.init(id: UUID().uuidString, value))
+              pathAppender.append?(.init(id: "", value))
               UALog(.warn, eventType: .other("Navigation"), message: "Tapped [\(NBNavigationLink.self)] with value [\(value)] of type [\(P.self)] without an identifier.")
           } else {
               pathAppender.append?(.init(id: identifier!, value))
