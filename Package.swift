@@ -19,7 +19,7 @@ let package = Package(
   targets: [
     .target(
       name: "NavigationBackport",
-      dependencies: ["PrettyPrintSwift"]
+      dependencies: ["SwiftPrettyPrint"]
     ),
     .testTarget(
       name: "NavigationBackportTests",
