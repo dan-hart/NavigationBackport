@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import LoggingKit
 
 /// Keeps hold of the destination builder closures for a given type or local destination ID.
 class DestinationBuilderHolder: ObservableObject {
@@ -40,8 +41,10 @@ class DestinationBuilderHolder: ObservableObject {
       let key = identifier.rawValue.uuidString
       if let builder = builders[key], let output = builder(typedData) {
         return output
+      } else {
+          UALog(.error, eventType: .other("Navigation"), message: "[\(DestinationBuilderHolder.self)] has no destination for type [\(T.self)] key [\(key)].")
+          assertionFailure("No view builder found for type \(key)")
       }
-      assertionFailure("No view builder found for type \(key)")
     } else {
       var possibleMirror: Mirror? = Mirror(reflecting: base ?? typedData)
       while let mirror = possibleMirror {
@@ -52,6 +55,7 @@ class DestinationBuilderHolder: ObservableObject {
         }
         possibleMirror = mirror.superclassMirror
       }
+      UALog(.error, eventType: .other("Navigation"), message: "[\(DestinationBuilderHolder.self)] has no destination for type [\(T.self)] (key is nil).")
       assertionFailure("No view builder found for type \(type(of: base ?? typedData))")
     }
     return AnyView(Image(systemName: "exclamationmark.triangle"))

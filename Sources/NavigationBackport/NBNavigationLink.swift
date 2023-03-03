@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import LoggingKit
 
 @available(iOS, deprecated: 16.0, message: "Use SwiftUI's Navigation API beyond iOS 15")
 /// When value is non-nil, shows the destination associated with its type.
@@ -21,6 +22,7 @@ public struct NBNavigationLink<P: Hashable, Label: View>: View {
       action: {
         guard let value = value else { return }
         pathAppender.append?(value)
+        UALog(.info, eventType: .other("Navigation"), message: "Tapped [\(NBNavigationLink.self)] with value [\(value)] of type [\(P.self)].")
       },
       label: { label }
     )
