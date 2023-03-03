@@ -13,13 +13,11 @@ let package = Package(
       targets: ["NavigationBackport"]
     ),
   ],
-  dependencies: [
-    .package(url: "https://github.com/YusukeHosonuma/SwiftPrettyPrint.git", exact: "1.4.0")
-  ],
+  dependencies: [],
   targets: [
     .target(
       name: "NavigationBackport",
-      dependencies: ["SwiftPrettyPrint"]
+      dependencies: []
     ),
     .testTarget(
       name: "NavigationBackportTests",
